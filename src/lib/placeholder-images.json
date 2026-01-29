@@ -1,3 +1,136 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "hero",
+      "description": "A vibrant, energetic nightclub scene with people dancing.",
+      "imageUrl": "https://images.unsplash.com/photo-1543934753-eb262cf4606e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxuaWdodGNsdWIlMjBwYXJ0eXxlbnwwfHx8fDE3Njk2OTQzNzZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "nightclub party"
+    },
+    {
+      "id": "event-art-1",
+      "description": "Graphic for 'Urban Takeover' event.",
+      "imageUrl": "https://images.unsplash.com/photo-1695233744051-d1d64f567082?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb25jZXJ0JTIwZGp8ZW58MHx8fHwxNzY5Njk0Mzc2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "concert dj"
+    },
+    {
+      "id": "event-art-2",
+      "description": "Graphic for 'Summer Jam' event.",
+      "imageUrl": "https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxtdXNpYyUyMGZlc3RpdmFsfGVufDB8fHx8MTc2OTYyOTE0N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "music festival"
+    },
+    {
+      "id": "event-art-3",
+      "description": "Graphic for 'The Afterparty' event.",
+      "imageUrl": "https://images.unsplash.com/photo-1627819098699-d8ae75db1112?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxuZW9uJTIwbGlnaHRzfGVufDB8fHx8MTc2OTY4NzM5N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "neon lights"
+    },
+    {
+      "id": "merch-1",
+      "description": "A black hoodie with the NR4 NINJAS logo.",
+      "imageUrl": "https://images.unsplash.com/photo-1680292783974-a9a336c10366?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxibGFjayUyMGhvb2RpZXxlbnwwfHx8fDE3Njk2Nzg2MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "black hoodie"
+    },
+    {
+      "id": "merch-2",
+      "description": "A white t-shirt with a red ninja emoji.",
+      "imageUrl": "https://images.unsplash.com/photo-1522706604291-210a56c3b376?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx3aGl0ZSUyMHQtc2hpcnR8ZW58MHx8fHwxNzY5NTk1MTc5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "white t-shirt"
+    },
+    {
+      "id": "merch-3",
+      "description": "A black snapback cap with 'NR4' embroidered.",
+      "imageUrl": "https://images.unsplash.com/photo-1635163103213-043efbb0e7f6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxibGFjayUyMGNhcHxlbnwwfHx8fDE3Njk2OTQzNzZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "black cap"
+    },
+    {
+      "id": "gallery-1",
+      "description": "People enjoying themselves at an NR4 NINJAS event.",
+      "imageUrl": "https://images.unsplash.com/photo-1543748693-d5cb2d062a06?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjcm93ZCUyMGRhbmNpbmd8ZW58MHx8fHwxNzY5NjkwNjIyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "crowd dancing"
+    },
+    {
+      "id": "gallery-2",
+      "description": "DJ performing on stage with lights.",
+      "imageUrl": "https://images.unsplash.com/photo-1766483109035-807c4bc0321d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxkaiUyMHN0YWdlfGVufDB8fHx8MTc2OTY5NDM3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dj stage"
+    },
+    {
+      "id": "gallery-3",
+      "description": "A stylish couple posing for a photo at a club.",
+      "imageUrl": "https://images.unsplash.com/photo-1763651963197-2e0a4d2e5f8d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxjb3VwbGUlMjBuaWdodGNsdWJ8ZW58MHx8fHwxNzY5NjI1NzIwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "couple nightclub"
+    },
+    {
+      "id": "gallery-4",
+      "description": "Close up of a person holding a drink and smiling.",
+      "imageUrl": "https://images.unsplash.com/photo-1515169067868-5387ec356754?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxjb2NrdGFpbCUyMHBhcnR5fGVufDB8fHx8MTc2OTY5NDM3NXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cocktail party"
+    },
+    {
+      "id": "gallery-5",
+      "description": "Wide shot of the dance floor.",
+      "imageUrl": "https://images.unsplash.com/photo-1564286804252-85b3ec2e9752?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxkYW5jZSUyMGZsb29yfGVufDB8fHx8MTc2OTYyODAwMnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dance floor"
+    },
+    {
+      "id": "gallery-6",
+      "description": "Group of friends taking a selfie.",
+      "imageUrl": "https://images.unsplash.com/photo-1758274251827-290761e91fe6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZnJpZW5kcyUyMHNlbGZpZXxlbnwwfHx8fDE3Njk2OTQzNzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "friends selfie"
+    },
+    {
+      "id": "dj-profile-1",
+      "description": "Profile picture of DJ Ace.",
+      "imageUrl": "https://images.unsplash.com/photo-1583026485928-1256ecc17349?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxkaiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2OTYyODAwM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dj portrait"
+    },
+    {
+      "id": "dj-gallery-1a",
+      "description": "DJ Ace performing at a festival.",
+      "imageUrl": "https://images.unsplash.com/photo-1768885514803-c002833edcb3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZGolMjBwZXJmb3JtYW5jZXxlbnwwfHx8fDE3Njk2OTQzNzZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dj performance"
+    },
+    {
+      "id": "dj-gallery-1b",
+      "description": "DJ Ace in the studio.",
+      "imageUrl": "https://images.unsplash.com/photo-1567787609897-efa3625dd22d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtdXNpYyUyMHN0dWRpb3xlbnwwfHx8fDE3Njk2MzM4ODh8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "music studio"
+    },
+    {
+      "id": "dj-profile-2",
+      "description": "Profile picture of DJ Blaze.",
+      "imageUrl": "https://images.unsplash.com/photo-1686242584283-cc2592a20744?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3b21hbiUyMGRqfGVufDB8fHx8MTc2OTY5NDM3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "woman dj"
+    },
+    {
+      "id": "dj-gallery-2a",
+      "description": "DJ Blaze behind the decks.",
+      "imageUrl": "https://images.unsplash.com/photo-1687519561383-a4ab35dbea49?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxkaiUyMGRlY2tzfGVufDB8fHx8MTc2OTY5NDM3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dj decks"
+    },
+    {
+      "id": "dj-gallery-2b",
+      "description": "DJ Blaze interacting with the crowd.",
+      "imageUrl": "https://images.unsplash.com/photo-1549342902-be005322599a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxkaiUyMGNyb3dkfGVufDB8fHx8MTc2OTY5MTMyMnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dj crowd"
+    },
+    {
+      "id": "dj-profile-3",
+      "description": "Profile picture of DJ Shadow.",
+      "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYWxlJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzY5NjA4Mzc0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "male portrait"
+    },
+    {
+      "id": "dj-gallery-3a",
+      "description": "DJ Shadow mixing tracks.",
+      "imageUrl": "https://images.unsplash.com/photo-1571266028243-d220c6a7edbf?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkaiUyMG1peGluZ3xlbnwwfHx8fDE3Njk2OTQzNzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dj mixing"
+    },
+    {
+      "id": "dj-gallery-3b",
+      "description": "DJ Shadow in a press shot.",
+      "imageUrl": "https://images.unsplash.com/photo-1624338618005-0a93e308abae?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHx1cmJhbiUyMGZhc2hpb258ZW58MHx8fHwxNzY5Njk0Mzc1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "urban fashion"
+    }
+  ]
 }
