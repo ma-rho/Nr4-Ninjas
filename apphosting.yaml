@@ -5,3 +5,21 @@ runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
   maxInstances: 1
+
+env:
+  - variable: NEXT_PUBLIC_PAYPAL_CLIENT_ID
+    value: AWwZb9q-qgQ5CQkb7DoEN0azXzfh-J7cCwfJRAOrOYZ63JwDKztsvYz27DdGP47ncfD-nv9mBeEGJBb9
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyAqFjjgcd050JhD5wRe_hKTeeJfpT4ibTA
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: nr4-9c722.firebaseapp.com
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: nr4-9c722
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: nr4-9c722.firebasestorage.app
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: '711669006825'
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: 1:711669006825:web:e5e6aedafce80a30e24b78
+  - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    value: G-8C8NC0Q9HN
