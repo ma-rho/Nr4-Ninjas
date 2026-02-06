@@ -39,7 +39,7 @@ To get a local copy up and running, follow these simple steps.
   npm install npm@latest -g
   ```
 
-### Installation
+### Installation & Local Development
 
 1. Clone the repo
    ```sh
@@ -49,7 +49,7 @@ To get a local copy up and running, follow these simple steps.
    ```sh
    npm install
    ```
-3. Set up your environment variables by creating a `.env.local` file in the root of the project. You will need to add your Firebase project configuration here.
+3. Set up your local environment variables by creating a `.env.local` file in the root of the project. **This file is for local development only and should not be committed to your repository.**
 
    ```
    NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
@@ -58,6 +58,7 @@ To get a local copy up and running, follow these simple steps.
    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
    NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+   NEXT_PUBLIC_PAYPAL_CLIENT_ID=your_paypal_client_id
    ```
 
 4. Run the development server
@@ -67,8 +68,14 @@ To get a local copy up and running, follow these simple steps.
 
 Now, you can open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
 
+## Deployment & Secrets
+
+This project is configured for continuous deployment with Firebase App Hosting. When you push changes to the `main` branch, a new version is automatically built and deployed.
+
+**Important:** Production secrets (like API keys) are **not** stored in the repository. They are managed securely using [Google Cloud Secret Manager](https://cloud.google.com/secret-manager). The `firebase.json` file is configured to instruct App Hosting to inject these secrets as environment variables during the build process.
+
 ### Accessing the Admin Dashboard
 
 To access the admin features, you will need to create a user account through your Firebase project's Authentication console. Once you have created a user, you can log in through the application's admin login page.
 
-<img width="1905" height="913" alt="NR4 NINJAS _ A live story  - Google Chrome 06_02_2026 18_59_48" src="https://github.com/user-attachments/assets/3813d181-79d6-47ca-b10f-8ed69e66f202" />
+<img width="1905" height="913" alt="NR4 NINJAS _ A live story - Google Chrome 06_02_2026 18_59_48" src="https://github.com/user-attachments/assets/3813d181-79d6-47ca-b10f-8ed69e66f202" />
