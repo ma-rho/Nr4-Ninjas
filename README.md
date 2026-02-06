@@ -70,3 +70,5 @@ Now, you can open [http://localhost:3000](http://localhost:3000) in your browser
 ### Accessing the Admin Dashboard
 
 To access the admin features, you will need to create a user account through your Firebase project's Authentication console. Once you have created a user, you can log in through the application's admin login page.
+
+<img width="1905" height="913" alt="NR4 NINJAS _ A live story  - Google Chrome 06_02_2026 18_59_48" src="https://github.com/user-attachments/assets/3813d181-79d6-47ca-b10f-8ed69e66f202" />
