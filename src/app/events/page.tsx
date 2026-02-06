@@ -1,5 +1,10 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { db } from '@/lib/firebase';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -9,10 +14,35 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { events } from '@/lib/data';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Loader2 } from 'lucide-react';
+
+interface Event {
+  id: string;
+  name: string;
+  date: string;
+  location: string;
+  link: string;
+  imageUrl: string;
+}
 
 export default function EventsPage() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const q = query(collection(db, 'events'), orderBy('date', 'desc'));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const eventsData: Event[] = [];
+      querySnapshot.forEach((doc) => {
+        eventsData.push({ id: doc.id, ...doc.data() } as Event);
+      });
+      setEvents(eventsData);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   return (
     <div className="container mx-auto px-4 py-12">
       <div className="text-center">
@@ -24,22 +54,22 @@ export default function EventsPage() {
         </p>
       </div>
 
-      <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {events.map((event) => {
-          const eventImage = PlaceHolderImages.find(
-            (img) => img.id === event.artwork
-          );
-          return (
+      {loading ? (
+        <div className="flex justify-center mt-12">
+            <Loader2 className="animate-spin" size={48} />
+        </div>
+      ) : (
+        <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {events.map((event) => (
             <Card
               key={event.id}
               className="flex flex-col overflow-hidden transition-all hover:border-primary hover:shadow-lg hover:shadow-primary/10"
             >
-              {eventImage && (
+              {event.imageUrl && (
                 <div className="aspect-square w-full overflow-hidden">
                   <Image
-                    src={eventImage.imageUrl}
-                    alt={eventImage.description}
-                    data-ai-hint={eventImage.imageHint}
+                    src={event.imageUrl}
+                    alt={event.name}
                     width={600}
                     height={600}
                     className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
@@ -59,22 +89,18 @@ export default function EventsPage() {
                   - {event.location}
                 </CardDescription>
               </CardHeader>
-              <CardContent className="flex-grow">
-                <p className="text-sm text-muted-foreground">
-                  {event.description}
-                </p>
-              </CardContent>
+              <CardContent className="flex-grow" />
               <CardFooter>
                 <Button asChild className="w-full">
-                  <Link href={event.ticketUrl} target="_blank">
+                  <Link href={event.link} target="_blank">
                     Get Tickets ‼️
                   </Link>
                 </Button>
               </CardFooter>
             </Card>
-          );
-        })}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

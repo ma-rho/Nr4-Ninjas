@@ -1,0 +1,31 @@
+
+    rules_version = '2';
+    service cloud.firestore {
+      match /databases/{database}/documents {
+
+        // Public read access, admin-only write access for djs
+        match /djs/{djId} {
+          allow read: if true;
+          allow create, update, delete: if request.auth != null;
+        }
+
+        // Public read access, admin-only write access for events
+        match /events/{eventId} {
+          allow read: if true;
+          allow create, update, delete: if request.auth != null;
+        }
+
+        // Public read access, admin-only write access for the photo gallery
+        match /photos/{photoId} {
+          allow read: if true;
+          allow create, update, delete: if request.auth != null;
+        }
+
+        // Public read access, admin-only write access for merchandise
+        match /merch/{merchId} {
+          allow read: if true;
+          allow create, update, delete: if request.auth != null;
+        }
+      }
+    }
+    

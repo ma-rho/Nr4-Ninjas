@@ -26,7 +26,7 @@ export function Footer() {
       <div className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div className="flex flex-col items-center md:items-start">
-            <Logo />
+            <Logo src="/slogo.jpeg" />
             <p className="mt-4 text-center text-sm text-muted-foreground md:text-left">
               A live story. #nr4ninjas
             </p>

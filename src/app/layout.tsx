@@ -3,6 +3,9 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { Header } from '@/components/site/Header';
 import { Footer } from '@/components/site/Footer';
+import { AuthProvider } from '@/context/AuthContext';
+import { CartProvider } from '@/context/CartContext';
+import { PayPalProvider } from '@/components/site/PayPalProvider';
 
 export const metadata: Metadata = {
   title: 'NR4 NINJAS | A live story.',
@@ -29,13 +32,19 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="font-body antialiased">
-        <div className="flex min-h-screen flex-col">
-          <Header />
-          <main className="flex-grow">{children}</main>
-          <Footer />
-        </div>
-        <Toaster />
+      <body className="font-body antialiased" suppressHydrationWarning={true}>
+        <PayPalProvider>
+          <AuthProvider>
+            <CartProvider>
+              <div className="flex min-h-screen flex-col">
+                <Header />
+                <main className="flex-grow">{children}</main>
+                <Footer />
+              </div>
+              <Toaster />
+            </CartProvider>
+          </AuthProvider>
+        </PayPalProvider>
       </body>
     </html>
   );

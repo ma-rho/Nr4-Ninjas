@@ -1,41 +1,22 @@
-import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Card, CardContent } from '@/components/ui/card';
+import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+import { PhotoGallery } from '@/components/site/PhotoGallery';
 
-export default function PhotosPage() {
-  const galleryImages = PlaceHolderImages.filter((img) =>
-    img.id.startsWith('gallery-')
-  );
+async function getPhotos() {
+  const photosCollection = collection(db, 'photos');
+  const q = query(photosCollection, orderBy('createdAt', 'desc'));
+  const querySnapshot = await getDocs(q);
+  const photos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as { id: string; url: string; createdAt: string }[];
+  return photos;
+}
+
+export default async function PhotosPage() {
+  const photos = await getPhotos();
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="text-center">
-        <h1 className="font-headline text-5xl uppercase text-primary md:text-7xl">
-          Photos 📸
-        </h1>
-        <p className="mt-4 text-lg text-muted-foreground">
-          Scenes from the live story. Find yourself.
-        </p>
-      </div>
-
-      <div className="mt-12 columns-1 gap-4 sm:columns-2 md:columns-3 lg:columns-4">
-        {galleryImages.map((image, index) => (
-          <div key={index} className="mb-4 break-inside-avoid">
-            <Card className="overflow-hidden">
-              <CardContent className="p-0">
-                <Image
-                  src={image.imageUrl}
-                  alt={image.description}
-                  data-ai-hint={image.imageHint}
-                  width={600}
-                  height={400}
-                  className="h-auto w-full"
-                />
-              </CardContent>
-            </Card>
-          </div>
-        ))}
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-4xl font-bold text-center mb-8">Photo Gallery📸</h1>
+      <PhotoGallery photos={photos} />
     </div>
   );
 }
