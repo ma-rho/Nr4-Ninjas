@@ -5,7 +5,7 @@ interface LogoProps {
   src?: string;
 }
 
-export function Logo({ src = "/logo.PNG" }: LogoProps) {
+export function Logo({ src = "/logo.png" }: LogoProps) {
   return (
     <Link
       href="/"
@@ -15,10 +15,10 @@ export function Logo({ src = "/logo.PNG" }: LogoProps) {
       <div className="relative">
         <Image
           src={src}
-          alt="NR4 NINJAS Logo"
+          alt="NR4 NINJAS"
           width={240}
           height={80}
-          className="h-20 w-auto mix-blend-lighten"
+          className="h-20 w-auto mix-blend-screen brightness-110"
           priority
         />
       </div>

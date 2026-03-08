@@ -33,18 +33,19 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased" suppressHydrationWarning={true}>
-        <PayPalProvider>
+        {/* CartProvider MUST be outside so PayPal logic can access cart data immediately */}
+        <CartProvider>
           <AuthProvider>
-            <CartProvider>
+            <PayPalProvider>
               <div className="flex min-h-screen flex-col">
                 <Header />
                 <main className="flex-grow">{children}</main>
                 <Footer />
               </div>
               <Toaster />
-            </CartProvider>
+            </PayPalProvider>
           </AuthProvider>
-        </PayPalProvider>
+        </CartProvider>
       </body>
     </html>
   );
