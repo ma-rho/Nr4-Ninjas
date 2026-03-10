@@ -26,6 +26,12 @@
           allow read: if true;
           allow create, update, delete: if request.auth != null;
         }
+        
+        // Allow anyone to subscribe to the newsletter, but not read the list
+        match /newsletter_subscriptions/{subscriptionId} {
+          allow create: if true;
+          allow read, update, delete: if false;
+        }
       }
     }
     

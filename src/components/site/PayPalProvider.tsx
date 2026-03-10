@@ -1,30 +1,26 @@
 'use client';
 
-import { PayPalScriptProvider } from '@paypal/react-paypal-js';
-import { ReactNode } from 'react';
+// Change this import to the standard one
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 
-interface PayPalProviderProps {
-  children: ReactNode;
-}
+export const PayPalProvider = ({ children }: { children: React.ReactNode }) => {
+  const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID || "";
 
-export function PayPalProvider({ children }: PayPalProviderProps) {
-  const clientId = process.env.NEXT_PUBLIC_PAYPAL_CLIENT_ID;
-
-  if (!clientId || clientId === 'YOUR_CLIENT_ID') {
-    console.error('PayPal Client ID is not configured.');
+  if (!clientId) {
+    console.error("PayPal Client ID is missing! Add NEXT_PUBLIC_PAYPAL_CLIENT_ID to your .env.local");
   }
-  
-  const initialOptions = {
-    clientId: clientId || 'YOUR_CLIENT_ID',
-    currency: 'GBP',
-    intent: 'capture',
-    // CRITICAL: Request both buttons and card-fields for Expanded Checkout
-    components: 'buttons,card-fields', 
-  };
 
   return (
-    <PayPalScriptProvider options={initialOptions}>
+    <PayPalScriptProvider
+      options={{
+        clientId: clientId,
+        currency: "GBP",
+        intent: "capture",
+        // This ensures the button logic is loaded and ready
+        components: "buttons", 
+      }}
+    >
       {children}
     </PayPalScriptProvider>
   );
-}
+};

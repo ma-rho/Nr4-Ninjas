@@ -1,193 +1,99 @@
+"use server";
 
-const functions = require("firebase-functions");
-const admin = require("firebase-admin");
-const fetch = require("node-fetch");
-const cors = require("cors")({ origin: true });
+import Stripe from "stripe";
+import { headers } from "next/headers";
 
-// Initialize Firebase Admin SDK
-admin.initializeApp();
-const db = admin.firestore();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: "2025-01-27.acacia", // Always use the latest API version
+});
 
-// Get PayPal credentials from Firebase environment configuration
-// In your terminal, run:
-// firebase functions:config:set paypal.client_id="YOUR_SANDBOX_CLIENT_ID"
-// firebase functions:config:set paypal.client_secret="YOUR_SANDBOX_CLIENT_SECRET"
-const { client_id, client_secret } = functions.config().paypal;
-const PAYPAL_API_BASE = "https://api.sandbox.paypal.com";
+export async function createStripeCheckout(cartItems) {
+  const origin = (await headers()).get("origin");
 
-/**
- * Generates and caches a PayPal API access token.
- */
-let paypalAuthToken = null;
-const getPayPalAccessToken = async () => {
-    if (paypalAuthToken && paypalAuthToken.expires > Date.now()) {
-        return paypalAuthToken.token;
-    }
-
-    if (!client_id || !client_secret) {
-        throw new Error("PayPal credentials are not configured in Firebase.");
-    }
-
-    const auth = Buffer.from(`${client_id}:${client_secret}`).toString("base64");
-    const response = await fetch(`${PAYPAL_API_BASE}/v1/oauth2/token`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Authorization": `Basic ${auth}`,
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "payment",
+      payment_method_types: ["card"],
+      line_items: cartItems.map((item) => ({
+        price_data: {
+          currency: "gbp",
+          product_data: {
+            name: item.name,
+            images: [item.image],
+          },
+          unit_amount: Math.round(item.price * 100), // Stripe expects cents/pence
         },
-        body: "grant_type=client_credentials",
+        quantity: item.quantity,
+      })),
+      success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/cart`,
     });
 
-    if (!response.ok) {
-        const error = await response.json();
-        console.error("Failed to get PayPal access token:", error);
-        throw new Error("Failed to authenticate with PayPal.");
+    return { url: session.url };
+  } catch (error) {
+    console.error("Stripe Error:", error.message);
+    throw new Error("Could not create checkout session");
+  }
+}
+
+// --- Event Newsletter Function (Firestore-triggered) ---
+
+/**
+ * Sends a newsletter email to all subscribers when a new event is created.
+ */
+exports.sendEventNewsletter = functions.firestore
+  .document("events/{eventId}")
+  .onCreate(async (snapshot) => {
+    const eventData = snapshot.data();
+
+    if (!eventData) {
+      console.log("No data associated with the event.");
+      return null;
     }
 
-    const data = await response.json();
-    paypalAuthToken = {
-        token: data.access_token,
-        expires: Date.now() + (data.expires_in - 300) * 1000,
-    };
-    return paypalAuthToken.token;
-};
+    try {
+      // 1. Get all newsletter subscribers
+      const subscribersSnapshot = await db.collection("newsletter_subscriptions").get();
+      if (subscribersSnapshot.empty) {
+        console.log("No subscribers found.");
+        return null;
+      }
 
-/**
- * =================================================================
- *                        CREATE ORDER ENDPOINT
- * =================================================================
- * - Validates cart items against Firestore.
- * - Calculates the total amount on the server to prevent manipulation.
- * - Creates a PayPal order with the correct amount and currency.
- * - Includes 3D Secure configuration required for GBP transactions.
- */
-exports.createOrder = functions.https.onRequest(async (req, res) => {
-    cors(req, res, async () => {
-        if (req.method !== "POST") {
-            return res.status(405).send("Method Not Allowed");
-        }
+      const subscribers = subscribersSnapshot.docs.map(doc => doc.data().email).filter(email => !!email);
 
-        try {
-            const { cart } = req.body;
-            if (!cart || !Array.isArray(cart) || cart.length === 0) {
-                return res.status(400).json({ error: "Cart data is missing or invalid." });
-            }
+      if (subscribers.length === 0) {
+        console.log("Subscriber list is empty or contains no valid emails.");
+        return null;
+      }
 
-            // --- Secure Price Calculation ---
-            // Fetch product prices from Firestore to build a secure list of items.
-            const serverItems = await Promise.all(cart.map(async (clientItem) => {
-                const productRef = db.collection("merch").doc(clientItem.id);
-                const doc = await productRef.get();
-                if (!doc.exists) {
-                    throw new Error(`Product with ID ${clientItem.id} not found.`);
-                }
-                const productData = doc.data();
-                return {
-                    name: productData.name,
-                    quantity: String(clientItem.quantity),
-                    unit_amount: {
-                        currency_code: "GBP",
-                        value: productData.price.toFixed(2),
-                    },
-                };
-            }));
+      // 2. Add an email document to the 'mail' collection for each subscriber.
+      // The "Trigger Email" extension will then detect these and send the actual emails.
+      const mailCollection = db.collection("mail");
 
-            const totalValue = serverItems.reduce((sum, item) => {
-                return sum + (parseFloat(item.unit_amount.value) * parseInt(item.quantity, 10));
-            }, 0).toFixed(2);
+      const emailPromises = subscribers.map(email => {
+        return mailCollection.add({
+          to: [email],
+          message: {
+            subject: `New Event Alert: ${eventData.name}`,
+            html: `
+              <h1>A new event has been announced!</h1>
+              <h2>${eventData.name}</h2>
+              <p><b>Date:</b> ${new Date(eventData.date.seconds * 1000).toLocaleDateString()}</p>
+              <p><b>Venue:</b> ${eventData.venue}</p>
+              <p>${eventData.description}</p>
+              <p>Don't miss out! Get more details on our website.</p>
+              <p><em>- The NR4 Ninjas Team</em></p>
+            `,
+          },
+        });
+      });
 
-            const accessToken = await getPayPalAccessToken();
+      await Promise.all(emailPromises);
+      console.log(`Successfully queued emails for ${subscribers.length} subscribers.`);
+      return null;
 
-            const payload = {
-                intent: "CAPTURE",
-                purchase_units: [{
-                    amount: {
-                        currency_code: "GBP",
-                        value: totalValue,
-                        breakdown: {
-                            item_total: { currency_code: "GBP", value: totalValue },
-                        },
-                    },
-                    items: serverItems,
-                }],
-                payment_source: {
-                    card: {
-                        experience_context: {
-                            payment_method_preference: "SCA_WHEN_REQUIRED",
-                        },
-                    },
-                },
-            };
-
-            const response = await fetch(`${PAYPAL_API_BASE}/v2/checkout/orders`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${accessToken}`,
-                },
-                body: JSON.stringify(payload),
-            });
-            
-            const data = await response.json();
-            
-            if (!response.ok) {
-                console.error("Failed to create PayPal order:", data);
-                return res.status(response.status).json(data);
-            }
-            
-            // Return only the order ID to the client
-            res.status(200).json({ id: data.id });
-
-        } catch (error) {
-            console.error("Error in createOrder function:", error);
-            res.status(500).json({ error: error.message });
-        }
-    });
-});
-
-/**
- * =================================================================
- *                       CAPTURE ORDER ENDPOINT
- * =================================================================
- * - Captures the payment for a previously created order.
- * - This is called from the onApprove callback on the client.
- */
-exports.captureOrder = functions.https.onRequest(async (req, res) => {
-    cors(req, res, async () => {
-        if (req.method !== "POST") {
-            return res.status(405).send("Method Not Allowed");
-        }
-        
-        try {
-            const { orderID } = req.body;
-            if (!orderID) {
-                return res.status(400).json({ error: "Order ID is required." });
-            }
-
-            const accessToken = await getPayPalAccessToken();
-            const url = `${PAYPAL_API_BASE}/v2/checkout/orders/${orderID}/capture`;
-
-            const response = await fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${accessToken}`,
-                },
-            });
-
-            const data = await response.json();
-            
-            if (!response.ok) {
-                 console.error("Failed to capture PayPal order:", data);
-                 return res.status(response.status).json(data);
-            }
-
-            // Return the full capture details to the client
-            res.status(200).json(data);
-
-        } catch (error) {
-            console.error("Error in captureOrder function:", error);
-            res.status(500).json({ error: error.message });
-        }
-    });
-});
+    } catch (error) {
+      console.error("Error sending event newsletter:", error);
+      return null;
+    }
+  });

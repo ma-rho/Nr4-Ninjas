@@ -5,7 +5,6 @@ import { Header } from '@/components/site/Header';
 import { Footer } from '@/components/site/Footer';
 import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
-import { PayPalProvider } from '@/components/site/PayPalProvider';
 
 export const metadata: Metadata = {
   title: 'NR4 NINJAS | A live story.',
@@ -36,14 +35,12 @@ export default function RootLayout({
         {/* CartProvider MUST be outside so PayPal logic can access cart data immediately */}
         <CartProvider>
           <AuthProvider>
-            <PayPalProvider>
-              <div className="flex min-h-screen flex-col">
-                <Header />
-                <main className="flex-grow">{children}</main>
-                <Footer />
-              </div>
-              <Toaster />
-            </PayPalProvider>
+            <div className="flex min-h-screen flex-col">
+              <Header />
+              <main className="flex-grow">{children}</main>
+              <Footer />
+            </div>
+            <Toaster />
           </AuthProvider>
         </CartProvider>
       </body>

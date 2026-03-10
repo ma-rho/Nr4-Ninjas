@@ -1,78 +1,70 @@
 'use client';
 
-import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js';
-import type { OnApproveData, CreateOrderData } from '@paypal/paypal-js';
+import { PayPalButtons } from '@paypal/react-paypal-js';
 import { useCart } from '@/context/CartContext';
 
-const CheckoutButton = () => {
+const CheckoutButton = ({ userName, userEmail }: { userName: string, userEmail: string }) => {
   const { cart, clearCart } = useCart();
-  const [{ isPending }] = usePayPalScriptReducer();
 
-  const createOrder = async (data: CreateOrderData, actions: any) => {
-    // 1. Calculate totals accurately
-    const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0).toFixed(2);
+  // 1. Create Order: Sends cart to Firebase, returns PayPal Order ID
+  const createOrder = async () => {
+    try {
+      const response = await fetch("https://us-central1-nr4-9c722.cloudfunctions.net/createOrder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cart: cart,
+          name: userName,
+          email: userEmail,
+        }),
+      });
 
-    return actions.order.create({
-      purchase_units: [
-        {
-          amount: {
-            currency_code: 'GBP',
-            value: totalAmount,
-            breakdown: {
-              item_total: {
-                currency_code: 'GBP',
-                value: totalAmount,
-              },
-            },
-          },
-          items: cart.map((item) => ({
-            name: item.name,
-            quantity: item.quantity.toString(),
-            unit_amount: {
-              currency_code: 'GBP',
-              value: item.price.toFixed(2),
-            },
-          })),
-        },
-      ],
-    });
+      const orderData = await response.json();
+
+      if (orderData.id) {
+        return orderData.id;
+      } else {
+        throw new Error(orderData.error || "Failed to create order");
+      }
+    } catch (error) {
+      console.error("Payment Start Error:", error);
+      alert("Could not start PayPal checkout. Please try again.");
+    }
   };
 
-  const onApprove = async (data: OnApproveData, actions: any) => {
+  // 2. On Approve: Tells Firebase to capture the money after user logs into PayPal
+  const onApprove = async (data: any) => {
     try {
-      const details = await actions.order.capture();
-      
-      // Handle "Instrument Declined" (Common with sandbox cards)
-      const errorDetail = details?.details?.[0];
-      if (errorDetail?.issue === "INSTRUMENT_DECLINED") {
-        return actions.restart(); // Recovery: redirects user to try another card
-      }
+      const response = await fetch("https://us-central1-nr4-9c722.cloudfunctions.net/captureOrder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderID: data.orderID,
+        }),
+      });
 
-      console.log('Capture result', details);
-      alert(`Transaction completed by ${details.payer.name.given_name}`);
-      clearCart();
-    } catch (err) {
-      console.error('Capture Error:', err);
+      const orderData = await response.json();
+
+      if (orderData.status === 'COMPLETED') {
+        alert("Transaction successful! Order ID: " + orderData.id);
+        clearCart();
+        // Redirect to a thank you page here if desired
+      } else {
+        alert("Transaction failed or is pending. Status: " + orderData.status);
+      }
+    } catch (error) {
+      console.error("Capture Error:", error);
+      alert("An error occurred while finalizing your payment.");
     }
   };
 
   return (
-    <div style={{ minHeight: '150px' }}>
-      {isPending && <div className="spinner" />}
+    <div style={{ minHeight: "150px" }}>
       <PayPalButtons
-        style={{ 
-          layout: 'vertical',
-          shape: 'rect',
-          color: 'gold',
-          label: 'checkout' 
-        }}
+        style={{ layout: "vertical", color: "blue", shape: "rect", label: "checkout" }}
         createOrder={createOrder}
         onApprove={onApprove}
-        onError={(err) => {
-          console.error("PayPal Button Error:", err);
-          // Standard sandbox cards often fail if the billing address 
-          // doesn't match the sandbox profile country (UK for GBP).
-        }}
+        onError={(err) => console.error("PayPal Button Error:", err)}
       />
     </div>
   );

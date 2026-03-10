@@ -1,9 +1,14 @@
+'use client';
+
+import { useRef } from 'react';
 import { Instagram, Mail } from 'lucide-react';
 import Link from 'next/link';
 
+import { subscribeToNewsletter } from '@/app/actions/newsletter';
 import { Logo } from '@/components/site/Logo';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -21,6 +26,40 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 export function Footer() {
+  const emailRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
+
+  const handleSubscribe = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const email = emailRef.current?.value;
+
+    if (!email) {
+      toast({
+        title: 'Error',
+        description: 'Please enter your email address.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    try {
+      const result = await subscribeToNewsletter(email);
+      toast({
+        title: 'Success',
+        description: result.message,
+      });
+      if (emailRef.current) {
+        emailRef.current.value = '';
+      }
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message || 'An unknown error occurred.',
+        variant: 'destructive',
+      });
+    }
+  };
+
   return (
     <footer className="border-t border-border/40 bg-secondary">
       <div className="container mx-auto px-4 py-8">
@@ -65,10 +104,7 @@ export function Footer() {
                 asChild
                 className="text-muted-foreground hover:text-primary"
               >
-                <Link
-                  href="mailto:Nr4ninjas@gmail.com"
-                  aria-label="Email"
-                >
+                <Link href="mailto:Nr4ninjas@gmail.com" aria-label="Email">
                   <Mail className="h-5 w-5" />
                 </Link>
               </Button>
@@ -82,8 +118,12 @@ export function Footer() {
                 <p className="mt-2 text-sm text-muted-foreground">
                   Get the latest on events & merch drops.
                 </p>
-                <form className="mt-4 flex w-full max-w-sm space-x-2">
+                <form
+                  onSubmit={handleSubscribe}
+                  className="mt-4 flex w-full max-w-sm space-x-2"
+                >
                   <Input
+                    ref={emailRef}
                     type="email"
                     placeholder="Email"
                     className="flex-1"
