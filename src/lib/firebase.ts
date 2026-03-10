@@ -1,8 +1,8 @@
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
-import { getStorage, FirebaseStorage } from 'firebase/storage';
-import { getFunctions, Functions } from 'firebase/functions';
+import { initializeApp, getApps, getApp } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
+import { getFunctions } from 'firebase/functions';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -13,15 +13,17 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-function getFirebaseServices() {
-  const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const storage = getStorage(app);
-  const functions = getFunctions(app);
-  return { app, auth, db, storage, functions };
-}
+// Check if we are in a browser environment or if the API key is present
+// This prevents initialization errors during the Next.js build phase
+const isConfigured = typeof window !== "undefined" || !!firebaseConfig.apiKey;
 
-const { app, auth, db, storage, functions } = getFirebaseServices();
+const app = isConfigured 
+  ? (!getApps().length ? initializeApp(firebaseConfig) : getApp())
+  : (null as any);
+
+const auth = isConfigured ? getAuth(app) : (null as any);
+const db = isConfigured ? getFirestore(app) : (null as any);
+const storage = isConfigured ? getStorage(app) : (null as any);
+const functions = isConfigured ? getFunctions(app) : (null as any);
 
 export { app, auth, db, storage, functions };
