@@ -58,6 +58,10 @@
     ],
     "buildEnvironmentVariables": [
       {
+        "key": "SERVICE_ACCOUNT_KEY",
+        "secret": "SERVICE_ACCOUNT_KEY"
+      },
+      {
         "key": "NEXT_PUBLIC_FIREBASE_API_KEY",
         "secret": "NEXT_PUBLIC_FIREBASE_API_KEY"
       },
