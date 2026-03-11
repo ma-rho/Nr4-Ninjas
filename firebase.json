@@ -20,8 +20,16 @@
     "region": "us-central1",
     "secretEnvironmentVariables": [
       {
-        "key": "SERVICE_ACCOUNT_KEY",
-        "secret": "SERVICE_ACCOUNT_KEY"
+        "key": "FIREBASE_PROJECT_ID",
+        "secret": "FIREBASE_PROJECT_ID"
+      },
+      {
+        "key": "FIREBASE_PRIVATE_KEY",
+        "secret": "FIREBASE_PRIVATE_KEY"
+      },
+      {
+        "key": "FIREBASE_CLIENT_EMAIL",
+        "secret": "FIREBASE_CLIENT_EMAIL"
       },
       {
         "key": "NEXT_PUBLIC_FIREBASE_API_KEY",
@@ -58,8 +66,16 @@
     ],
     "buildEnvironmentVariables": [
       {
-        "key": "SERVICE_ACCOUNT_KEY",
-        "secret": "SERVICE_ACCOUNT_KEY"
+        "key": "FIREBASE_PROJECT_ID",
+        "secret": "FIREBASE_PROJECT_ID"
+      },
+      {
+        "key": "FIREBASE_PRIVATE_KEY",
+        "secret": "FIREBASE_PRIVATE_KEY"
+      },
+      {
+        "key": "FIREBASE_CLIENT_EMAIL",
+        "secret": "FIREBASE_CLIENT_EMAIL"
       },
       {
         "key": "NEXT_PUBLIC_FIREBASE_API_KEY",
