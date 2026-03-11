@@ -1,23 +1,24 @@
-
-console.log("Build-time FIREBASE_PROJECT_ID:", process.env.FIREBASE_PROJECT_ID);
-console.log("Build-time FIREBASE_CLIENT_EMAIL:", process.env.FIREBASE_CLIENT_EMAIL);
-console.log("Build-time FIREBASE_PRIVATE_KEY exists:", !!process.env.FIREBASE_PRIVATE_KEY);
 import admin from 'firebase-admin';
 
+// When running in a Google Cloud environment like App Hosting, the Admin SDK
+// automatically discovers and uses the project's service account credentials.
+// This is called Application Default Credentials (ADC).
+// We no longer need to manually pass the projectId, clientEmail, or privateKey.
+
 const firebaseAdminConfig = {
-  credential: admin.credential.cert({
-    projectId: process.env.FIREBASE_PROJECT_ID,
-    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-    privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\n/g, '\n'),
-  }),
+  // We still need to provide the storage bucket for Storage operations.
+  // This value should be available from the NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET secret.
   storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
 };
 
 if (!admin.apps.length) {
   try {
+    // Initialize the app using ADC.
     admin.initializeApp(firebaseAdminConfig);
   } catch (error) {
-    console.error('Firebase admin initialization error', error);
+    console.error('Firebase admin initialization error with ADC:', error);
+    // Log the config being used, for debugging. Do not log private keys in production.
+    console.log('Attempted config:', firebaseAdminConfig);
   }
 }
 
