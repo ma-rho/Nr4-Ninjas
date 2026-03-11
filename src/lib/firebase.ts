@@ -13,17 +13,11 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-// Check if we are in a browser environment or if the API key is present
-// This prevents initialization errors during the Next.js build phase
-const isConfigured = typeof window !== "undefined" || !!firebaseConfig.apiKey;
-
-const app = isConfigured 
-  ? (!getApps().length ? initializeApp(firebaseConfig) : getApp())
-  : (null as any);
-
-const auth = isConfigured ? getAuth(app) : (null as any);
-const db = isConfigured ? getFirestore(app) : (null as any);
-const storage = isConfigured ? getStorage(app) : (null as any);
-const functions = isConfigured ? getFunctions(app) : (null as any);
+// Initialize Firebase
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+const functions = getFunctions(app);
 
 export { app, auth, db, storage, functions };

@@ -1,7 +1,6 @@
 'use server';
 
-import { db } from "@/lib/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { adminDb } from "@/lib/firebaseAdmin";
 
 // This server action handles newsletter signups.
 // It uses the email as the document ID to prevent duplicates and avoid a separate read operation.
@@ -12,11 +11,11 @@ export async function subscribeToNewsletter(email: string) {
   }
 
   try {
-    const subscriptionRef = doc(db, "newsletter_subscriptions", email);
+    const subscriptionRef = adminDb.collection("newsletter_subscriptions").doc(email);
 
-    // Use setDoc with merge: true to create or update the document.
+    // Use set with merge: true to create or update the document.
     // This is more efficient than checking for existence first.
-    await setDoc(subscriptionRef, {
+    await subscriptionRef.set({
       email: email,
       subscribedAt: new Date(),
     }, { merge: true }); // Using merge: true will update the document if it exists.

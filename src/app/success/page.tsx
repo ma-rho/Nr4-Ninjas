@@ -2,8 +2,6 @@ import { stripe } from "@/lib/stripe";
 import { redirect } from "next/navigation";
 import SuccessClient from "./SuccessClient";
 
-export const dynamic = 'force-dynamic';
-
 export default async function SuccessPage({
   searchParams,
 }: {
