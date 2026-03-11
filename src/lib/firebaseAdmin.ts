@@ -1,3 +1,7 @@
+
+console.log("Build-time FIREBASE_PROJECT_ID:", process.env.FIREBASE_PROJECT_ID);
+console.log("Build-time FIREBASE_CLIENT_EMAIL:", process.env.FIREBASE_CLIENT_EMAIL);
+console.log("Build-time FIREBASE_PRIVATE_KEY exists:", !!process.env.FIREBASE_PRIVATE_KEY);
 import admin from 'firebase-admin';
 
 const firebaseAdminConfig = {
