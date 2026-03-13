@@ -153,7 +153,7 @@ export default function DjProfilePage({ params }: { params: Promise<{ slug: stri
           <CardContent className="p-6">
             {dj.featuredMix ? (
               <audio controls className="w-full">
-                <source src={dj.featuredMix} type="audio/mpeg" />
+                <source src={dj.featuredMix} />
                 Your browser does not support the audio element.
               </audio>
             ) : (

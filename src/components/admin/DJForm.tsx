@@ -49,7 +49,7 @@ export function DJForm({ onDJAdded }: DJFormProps) {
         photoURL = await getDownloadURL(photoStorageRef);
       }
       
-      // Upload Featured Mix with file type validation
+      // Upload Featured Mix with file type and size validation
       let mixURL = '';
       const mixFile = values.featuredMix?.[0];
       if (mixFile) {
@@ -59,6 +59,14 @@ export function DJForm({ onDJAdded }: DJFormProps) {
           setUploading(false);
           return;
         }
+
+        const maxMixSize = 100 * 1024 * 1024; // 100 MB
+        if (mixFile.size > maxMixSize) {
+          alert('File is too large. Please upload a mix under 100MB.');
+          setUploading(false);
+          return;
+        }
+
         const mixStorageRef = ref(storage, `djs/mixes/${mixFile.name}`);
         await uploadBytes(mixStorageRef, mixFile);
         mixURL = await getDownloadURL(mixStorageRef);
