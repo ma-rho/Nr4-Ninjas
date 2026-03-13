@@ -13,6 +13,7 @@ import { db } from '@/lib/firebase';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
 
 interface Product {
   id: string;
@@ -23,14 +24,18 @@ interface Product {
 
 export default function ShopPage() {
   const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
   const { addToCart } = useCart();
   const { toast } = useToast();
 
   useEffect(() => {
     const q = query(collection(db, 'merch'), orderBy('name'));
     const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const productsData = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Product));
+      const productsData = querySnapshot.docs.map(
+        (doc) => ({ id: doc.id, ...doc.data() }) as Product,
+      );
       setProducts(productsData);
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -60,34 +65,51 @@ export default function ShopPage() {
         </p>
       </div>
 
-      <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {products.map((product) => (
-          <Card key={product.id} className="group flex flex-col overflow-hidden">
-            <div className="overflow-hidden">
-              {product.image && (
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  width={600}
-                  height={600}
-                  className="aspect-square h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              )}
-            </div>
-            <CardHeader className="flex-grow">
-              <CardTitle className="font-headline text-xl uppercase">
-                {product.name}
-              </CardTitle>
-            </CardHeader>
-            <CardFooter className="flex items-center justify-between">
-              <p className="font-body text-2xl font-bold text-primary">
-                £{product.price.toFixed(2)}
-              </p>
-              <Button onClick={() => handleAddToCart(product)}>Add to Cart</Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+      {loading ? (
+        <div className="flex justify-center mt-20">
+          <Loader2 className="animate-spin" size={48} />
+        </div>
+      ) : products.length === 0 ? (
+        <div className="text-center mt-20">
+          <p className="font-headline text-4xl uppercase text-primary">
+            New drops coming soon...
+          </p>
+        </div>
+      ) : (
+        <div className="mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {products.map((product) => (
+            <Card
+              key={product.id}
+              className="group flex flex-col overflow-hidden"
+            >
+              <div className="overflow-hidden">
+                {product.image && (
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    width={600}
+                    height={600}
+                    className="aspect-square h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                )}
+              </div>
+              <CardHeader className="flex-grow">
+                <CardTitle className="font-headline text-xl uppercase">
+                  {product.name}
+                </CardTitle>
+              </CardHeader>
+              <CardFooter className="flex items-center justify-between">
+                <p className="font-body text-2xl font-bold text-primary">
+                  £{product.price.toFixed(2)}
+                </p>
+                <Button onClick={() => handleAddToCart(product)}>
+                  Add to Cart
+                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

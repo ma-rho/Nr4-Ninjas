@@ -3,14 +3,16 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Menu } from 'lucide-react';
+import { useState } from 'react';
 
 import { Logo } from '@/components/site/Logo';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/context/AuthContext';
 import { auth } from '@/lib/firebase';
 import { CartIcon } from './CartIcon';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 const navLinks = [
   { href: '/events', label: 'Events' },
@@ -23,29 +25,36 @@ export function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, loading } = useAuth();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   async function handleLogout() {
     try {
       await auth.signOut();
       router.push('/');
+      closeSheet();
     } catch (error) {
       console.error('Error signing out: ', error);
     }
   }
 
+  const closeSheet = () => setIsSheetOpen(false);
+
   const NavLink = ({
     href,
     label,
     isMobile = false,
+    onClick,
   }: {
     href: string;
     label: string;
     isMobile?: boolean;
+    onClick?: () => void;
   }) => {
     const isActive = pathname === href;
     return (
       <Link
         href={href}
+        onClick={onClick}
         className={cn(
           'font-body uppercase tracking-widest transition-colors',
           isActive ? 'text-primary' : 'hover:text-primary/80',
@@ -63,7 +72,7 @@ export function Header() {
     if (user) {
       return (
         <>
-          <NavLink href="/admin" label="Dashboard" isMobile={isMobile} />
+          <NavLink href="/admin" label="Dashboard" isMobile={isMobile} onClick={closeSheet} />
           <Button
             onClick={handleLogout}
             variant="ghost"
@@ -78,7 +87,7 @@ export function Header() {
       );
     }
 
-    return <NavLink href="/admin/login" label="Admin" isMobile={isMobile} />;
+    return <NavLink href="/admin/login" label="Admin" isMobile={isMobile} onClick={closeSheet} />;
   };
 
   return (
@@ -97,7 +106,7 @@ export function Header() {
           <CartIcon />
 
           <div className="md:hidden">
-            <Sheet>
+            <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon">
                   <Menu className="h-6 w-6" />
@@ -105,11 +114,15 @@ export function Header() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                <VisuallyHidden>
+                  <SheetTitle>Mobile Menu</SheetTitle>
+                  <SheetDescription>Navigation links for the website</SheetDescription>
+                </VisuallyHidden>
                 <div className="p-4">
                   <Logo />
                   <nav className="mt-8 flex flex-col space-y-2">
                     {navLinks.map((link) => (
-                      <NavLink key={link.href} {...link} isMobile />
+                      <NavLink key={link.href} {...link} isMobile onClick={closeSheet} />
                     ))}
                     <AuthNav isMobile />
                   </nav>

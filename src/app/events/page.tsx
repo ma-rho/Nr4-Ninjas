@@ -56,7 +56,13 @@ export default function EventsPage() {
 
       {loading ? (
         <div className="flex justify-center mt-12">
-            <Loader2 className="animate-spin" size={48} />
+          <Loader2 className="animate-spin" size={48} />
+        </div>
+      ) : events.length === 0 ? (
+        <div className="text-center mt-20">
+          <p className="font-headline text-4xl uppercase text-primary">
+            More events coming soon...
+          </p>
         </div>
       ) : (
         <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">

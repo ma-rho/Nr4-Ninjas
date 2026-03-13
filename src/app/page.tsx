@@ -7,7 +7,15 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { db } from '@/lib/firebase';
-import { collection, query, orderBy, limit, onSnapshot, where } from 'firebase/firestore';
+import {
+  collection,
+  query,
+  orderBy,
+  limit,
+  onSnapshot,
+  where,
+} from 'firebase/firestore';
+import { Loader2 } from 'lucide-react';
 
 interface Event {
   id: string;
@@ -28,6 +36,8 @@ interface Product {
 export default function Home() {
   const [nextEvent, setNextEvent] = useState<Event | null>(null);
   const [featuredProduct, setFeaturedProduct] = useState<Product | null>(null);
+  const [eventLoading, setEventLoading] = useState(true);
+  const [productLoading, setProductLoading] = useState(true);
 
   useEffect(() => {
     const today = new Date().toISOString();
@@ -35,21 +45,29 @@ export default function Home() {
       collection(db, 'events'),
       where('date', '>=', today),
       orderBy('date', 'asc'),
-      limit(1)
+      limit(1),
     );
     const unsubscribeEvent = onSnapshot(eventQuery, (snapshot) => {
       if (!snapshot.empty) {
-        const eventData = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Event;
+        const eventData = {
+          id: snapshot.docs[0].id,
+          ...snapshot.docs[0].data(),
+        } as Event;
         setNextEvent(eventData);
       }
+      setEventLoading(false);
     });
 
     const productQuery = query(collection(db, 'merch'), orderBy('name'), limit(1));
     const unsubscribeProduct = onSnapshot(productQuery, (snapshot) => {
       if (!snapshot.empty) {
-        const productData = { id: snapshot.docs[0].id, ...snapshot.docs[0].data() } as Product;
+        const productData = {
+          id: snapshot.docs[0].id,
+          ...snapshot.docs[0].data(),
+        } as Product;
         setFeaturedProduct(productData);
       }
+      setProductLoading(false);
     });
 
     return () => {
@@ -82,7 +100,11 @@ export default function Home() {
         </div>
       </section>
 
-      {nextEvent && (
+      {eventLoading ? (
+        <div className="flex justify-center bg-secondary py-20">
+          <Loader2 className="animate-spin" size={48} />
+        </div>
+      ) : nextEvent ? (
         <section className="bg-secondary py-12 md:py-20">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
@@ -124,11 +146,26 @@ export default function Home() {
             </div>
           </div>
         </section>
+      ) : (
+        <section className="bg-secondary py-12 md:py-20">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="font-headline text-3xl uppercase text-primary md:text-4xl">
+              Next Event
+            </h2>
+            <p className="mt-4 font-headline text-4xl uppercase">
+              More events coming soon...
+            </p>
+          </div>
+        </section>
       )}
 
       <Separator />
 
-      {featuredProduct && (
+      {productLoading ? (
+        <div className="flex justify-center py-20">
+          <Loader2 className="animate-spin" size={48} />
+        </div>
+      ) : featuredProduct ? (
         <section className="py-12 md:py-20">
           <div className="container mx-auto px-4">
             <div className="grid grid-cols-1 items-center gap-8 md:grid-cols-2 md:gap-12">
@@ -165,6 +202,17 @@ export default function Home() {
                 </Button>
               </div>
             </div>
+          </div>
+        </section>
+      ) : (
+        <section className="py-12 md:py-20">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="font-headline text-3xl uppercase text-primary md:text-4xl">
+              Featured Merch
+            </h2>
+            <p className="mt-4 font-headline text-4xl uppercase">
+              New drops coming soon...
+            </p>
           </div>
         </section>
       )}

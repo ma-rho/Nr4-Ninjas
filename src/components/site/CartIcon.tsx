@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Input } from '@/components/ui/input';
 import { StripeCheckoutButton } from './StripeCheckoutButton';
+import { DialogTitle } from '@radix-ui/react-dialog';
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden';
 
 export function CartIcon() {
   const { cart, removeFromCart, updateQuantity } = useCart();
@@ -30,6 +32,9 @@ export function CartIcon() {
       </PopoverTrigger>
       
       <PopoverContent className="w-96 max-h-[90vh] overflow-hidden flex flex-col shadow-xl border-muted mr-4">
+        <VisuallyHidden>
+          <DialogTitle>Shopping Cart</DialogTitle>
+        </VisuallyHidden>
         <div className="p-4 border-b">
           <h4 className="font-bold text-lg leading-none">Your Cart</h4>
           <p className="text-sm text-muted-foreground mt-1">
