@@ -1,4 +1,3 @@
-
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -7,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { AudioPlayer } from '@/components/AudioPlayer';
-import { adminDb } from '@/lib/firebaseAdmin'; // Corrected import path
+import { adminDb } from '@/lib/firebaseAdmin';
 import type { Metadata, ResolvingMetadata } from 'next';
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -16,7 +15,6 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-// Define a type for the DJ data
 interface DjData {
     id: string;
     name: string;
@@ -31,11 +29,14 @@ interface DjData {
 }
 
 async function getDj(slug: string): Promise<DjData | null> {
+    // The only cleaning needed is to decode URL-encoded characters.
+    const decodedSlug = decodeURIComponent(slug);
     const djsRef = adminDb.collection('djs');
-    const q = djsRef.where('slug', '==', slug);
+    const q = djsRef.where('slug', '==', decodedSlug);
     const querySnapshot = await q.get();
 
     if (querySnapshot.empty) {
+        console.error(`[getDj] Firestore query for slug "${decodedSlug}" returned no results.`);
         return null;
     }
 
@@ -43,16 +44,16 @@ async function getDj(slug: string): Promise<DjData | null> {
     return { id: doc.id, ...doc.data() } as DjData;
 }
 
-// Generate Metadata for SEO
 type Props = {
-    params: { slug: string }
+    params: Promise<{ slug: string }>
 }
 
 export async function generateMetadata(
     { params }: Props,
     parent: ResolvingMetadata
 ): Promise<Metadata> {
-    const dj = await getDj(params.slug)
+    const { slug } = await params;
+    const dj = await getDj(slug);
 
     if (!dj) {
         return {
@@ -67,8 +68,13 @@ export async function generateMetadata(
     }
 }
 
-export default async function DjProfilePage({ params }: { params: { slug: string } }) {
-    const dj = await getDj(params.slug);
+export default async function DjProfilePage({ 
+    params 
+}: { 
+    params: Promise<{ slug: string }> 
+}) {
+    const { slug } = await params;
+    const dj = await getDj(slug);
 
     if (!dj) {
         notFound();
@@ -92,7 +98,7 @@ export default async function DjProfilePage({ params }: { params: { slug: string
                                     width={600}
                                     height={600}
                                     className="aspect-square h-full w-full object-cover"
-                                    priority // Prioritize loading of the main image
+                                    priority
                                 />
                             </CardContent>
                         </Card>
