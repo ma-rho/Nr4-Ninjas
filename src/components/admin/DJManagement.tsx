@@ -1,9 +1,9 @@
 'use client';
 
 import { DJForm } from '@/components/admin/DJForm';
-import { Button } from '@/components/ui/button';
-import { db } from '@/lib/firebase';
+import { db, storage } from '@/lib/firebase';
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
+import { ref, deleteObject } from 'firebase/storage';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { Users, Trash2 } from 'lucide-react';
@@ -29,12 +29,58 @@ export function DJManagement() {
   }, []);
 
   async function handleDelete(id: string) {
+    const djToDelete = djs.find(dj => dj.id === id);
+    if (!djToDelete) {
+      console.error('DJ to delete not found in state');
+      return;
+    }
+
     try {
+      // Delete photo from Storage
+      if (djToDelete.photo) {
+        try {
+            const photoRef = ref(storage, djToDelete.photo);
+            await deleteObject(photoRef);
+        } catch (error: any) {
+            if (error.code !== 'storage/object-not-found') {
+                throw error;
+            }
+        }
+      }
+
+      // Delete gallery images from Storage
+      if (djToDelete.gallery && djToDelete.gallery.length > 0) {
+        await Promise.all(djToDelete.gallery.map(async (url: string) => {
+            try {
+                const galleryImageRef = ref(storage, url);
+                await deleteObject(galleryImageRef);
+            } catch (error: any) {
+                if (error.code !== 'storage/object-not-found') {
+                    throw error;
+                }
+            }
+        }));
+      }
+
+      // Delete featured mix from Storage
+      if (djToDelete.featuredMix) {
+        try {
+            const mixRef = ref(storage, djToDelete.featuredMix);
+            await deleteObject(mixRef);
+        } catch (error: any) {
+            if (error.code !== 'storage/object-not-found') {
+                throw error;
+            }
+        }
+      }
+
+      // Delete Firestore document
       await deleteDoc(doc(db, 'djs', id));
+
       setDjs(djs.filter((dj) => dj.id !== id));
       router.refresh();
     } catch (error) {
-      console.error('Error deleting document: ', error);
+      console.error('Error deleting DJ and associated files: ', error);
     }
   }
 
@@ -54,7 +100,7 @@ export function DJManagement() {
                             <p className="font-bold text-sm">{dj.name}</p>
                         </div>
                         <button 
-                            onClick={() => { if(confirm("Delete this DJ?")) handleDelete(dj.id) }}
+                            onClick={() => { if(confirm("Delete this DJ and all their files?")) handleDelete(dj.id) }}
                             className="p-2 text-white/20 hover:text-vibe-red transition-all"
                         >
                             <Trash2 size={16} />

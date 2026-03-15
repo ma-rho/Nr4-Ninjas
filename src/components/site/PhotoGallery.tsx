@@ -10,7 +10,7 @@ interface Photo {
 
 interface PhotoGalleryProps {
   photos: Photo[];
-  loading: boolean;
+  loading?: boolean;
 }
 
 export function PhotoGallery({ photos, loading }: PhotoGalleryProps) {

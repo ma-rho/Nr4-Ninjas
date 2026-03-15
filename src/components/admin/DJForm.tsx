@@ -40,17 +40,7 @@ export function DJForm({ onDJAdded }: DJFormProps) {
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setUploading(true);
     try {
-      // Upload DJ photo
-      let photoURL = '';
-      const imageFile = values.photo?.[0];
-      if (imageFile) {
-        const photoStorageRef = ref(storage, `djs/photos/${imageFile.name}`);
-        await uploadBytes(photoStorageRef, imageFile);
-        photoURL = await getDownloadURL(photoStorageRef);
-      }
-      
-      // Upload Featured Mix with file type and size validation
-      let mixURL = '';
+      // --- File Validation (Synchronous) ---
       const mixFile = values.featuredMix?.[0];
       if (mixFile) {
         const allowedMixTypes = ['audio/mpeg', 'audio/wav', 'audio/mp4', 'audio/x-m4a'];
@@ -59,31 +49,47 @@ export function DJForm({ onDJAdded }: DJFormProps) {
           setUploading(false);
           return;
         }
-
         const maxMixSize = 100 * 1024 * 1024; // 100 MB
         if (mixFile.size > maxMixSize) {
           alert('File is too large. Please upload a mix under 100MB.');
           setUploading(false);
           return;
         }
-
-        const mixStorageRef = ref(storage, `djs/mixes/${mixFile.name}`);
-        await uploadBytes(mixStorageRef, mixFile);
-        mixURL = await getDownloadURL(mixStorageRef);
       }
 
-      // Upload Gallery Images
-      const galleryURLs: string[] = [];
-      if (values.gallery?.length) {
-        for (const file of Array.from(values.gallery as FileList)) {
-            const galleryStorageRef = ref(storage, `djs/gallery/${file.name}`);
-            await uploadBytes(galleryStorageRef, file);
-            const url = await getDownloadURL(galleryStorageRef);
-            galleryURLs.push(url);
-        }
-      }
+      // --- Execute all uploads in parallel ---
+      const [photoURL, mixURL, galleryURLs] = await Promise.all([
+        // 1. Upload DJ Photo
+        (async () => {
+          const file = values.photo?.[0];
+          if (!file) return '';
+          const storageRef = ref(storage, `djs/photos/${file.name}`);
+          await uploadBytes(storageRef, file);
+          return getDownloadURL(storageRef);
+        })(),
 
-      // Add DJ to Firestore
+        // 2. Upload Featured Mix
+        (async () => {
+          if (!mixFile) return '';
+          const metadata = { contentType: mixFile.type };
+          const storageRef = ref(storage, `djs/mixes/${mixFile.name}`);
+          await uploadBytes(storageRef, mixFile, metadata);
+          return getDownloadURL(storageRef);
+        })(),
+
+        // 3. Upload Gallery Images
+        Promise.all(
+          values.gallery?.length
+            ? Array.from(values.gallery as FileList).map(async (file) => {
+                const storageRef = ref(storage, `djs/gallery/${file.name}`);
+                await uploadBytes(storageRef, file);
+                return getDownloadURL(storageRef);
+              })
+            : [],
+        ),
+      ]);
+
+      // --- Add DJ to Firestore with the new URLs ---
       await addDoc(collection(db, 'djs'), {
         name: values.name,
         slug: values.name.toLowerCase().replace(/\s+/g, '-'),
