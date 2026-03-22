@@ -6,7 +6,18 @@ async function getPhotos() {
   const photosCollection = collection(db, 'photos');
   const q = query(photosCollection, orderBy('createdAt', 'desc'));
   const querySnapshot = await getDocs(q);
-  const photos = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })) as { id: string; url: string; createdAt: string }[];
+  
+  // Transform the complex Firestore object into a plain serializable object
+  const photos = querySnapshot.docs.map(doc => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      url: data.url,
+      // Convert Timestamp to a plain ISO string or milliseconds
+      createdAt: data.createdAt?.toDate?.() ? data.createdAt.toDate().toISOString() : null 
+    };
+  });
+  
   return photos;
 }
 

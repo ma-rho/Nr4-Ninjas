@@ -186,7 +186,7 @@ export default function Home() {
               )}
               <div className="text-center md:text-left">
                 <h2 className="font-headline text-3xl uppercase text-primary md:text-4xl">
-                  Featured Merch
+                  Featured Clothing
                 </h2>
                 <h3 className="mt-2 font-headline text-4xl uppercase md:text-5xl">
                   {featuredProduct.name}
@@ -208,7 +208,7 @@ export default function Home() {
         <section className="py-12 md:py-20">
           <div className="container mx-auto px-4 text-center">
             <h2 className="font-headline text-3xl uppercase text-primary md:text-4xl">
-              Featured Merch
+              Featured Clothing
             </h2>
             <p className="mt-4 font-headline text-4xl uppercase">
               New drops coming soon...

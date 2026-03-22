@@ -61,7 +61,7 @@ export default function ShopPage() {
           Shop
         </h1>
         <p className="mt-4 text-lg text-muted-foreground">
-          Official NR4 NINJAS merchandise. Limited drops.
+          Official NR4 Clothing. Limited drops.
         </p>
       </div>
 
