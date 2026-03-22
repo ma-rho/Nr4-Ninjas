@@ -14,11 +14,10 @@ interface PhotoGalleryProps {
 }
 
 export function PhotoGallery({ photos, loading }: PhotoGalleryProps) {
-
   if (loading) {
     return (
       <div className="flex justify-center mt-20">
-        <Loader2 className="animate-spin" size={48} />
+        <Loader2 className="animate-spin text-primary" size={48} />
       </div>
     );
   }
@@ -35,14 +34,19 @@ export function PhotoGallery({ photos, loading }: PhotoGalleryProps) {
 
   return (
     <div className="photo-grid">
-      {photos.map((photo) => (
-        <div key={photo.id} className="photo-grid-item">
+      {photos.map((photo, index) => (
+        <div key={photo.id} className="photo-grid-item relative overflow-hidden rounded-lg shadow-lg group">
           <Image 
             src={photo.url} 
-            alt="Photo from gallery" 
-            width={800} // Base width for Next.js Image optimization
-            height={800} // Base height for Next.js Image optimization
-            className="w-full h-full object-cover rounded-lg shadow-lg"
+            alt="Gallery photo" 
+            fill
+            // Optimization: Tells Next.js to serve smaller images.
+            // Since some items span 2 columns/rows in your CSS, 
+            // we provide a generous range to maintain quality.
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            // Priority for top images to improve initial load speed
+            priority={index < 6}
+            className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
         </div>
       ))}
