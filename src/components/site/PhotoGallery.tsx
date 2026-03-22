@@ -1,7 +1,7 @@
 'use client';
 
-import Masonry from 'react-masonry-css';
 import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
 
 interface Photo {
   id: string;
@@ -14,12 +14,6 @@ interface PhotoGalleryProps {
 }
 
 export function PhotoGallery({ photos, loading }: PhotoGalleryProps) {
-  const breakpointColumnsObj = {
-    default: 4,
-    1100: 3,
-    700: 2,
-    500: 1
-  };
 
   if (loading) {
     return (
@@ -40,20 +34,18 @@ export function PhotoGallery({ photos, loading }: PhotoGalleryProps) {
   }
 
   return (
-    <Masonry
-      breakpointCols={breakpointColumnsObj}
-      className="my-masonry-grid"
-      columnClassName="my-masonry-grid_column"
-    >
+    <div className="photo-grid">
       {photos.map((photo) => (
-        <div key={photo.id} className="photo-item">
-          <img 
+        <div key={photo.id} className="photo-grid-item">
+          <Image 
             src={photo.url} 
             alt="Photo from gallery" 
-            className="w-full h-auto rounded-lg shadow-lg"
+            width={800} // Base width for Next.js Image optimization
+            height={800} // Base height for Next.js Image optimization
+            className="w-full h-full object-cover rounded-lg shadow-lg"
           />
         </div>
       ))}
-    </Masonry>
+    </div>
   );
 }

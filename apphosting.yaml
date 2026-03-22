@@ -10,6 +10,15 @@ env:
 # Secret Stripe Key (linked to Secret Manager)
   - variable: STRIPE_SECRET_KEY
     secret: STRIPE_SECRET_KEY
+
+# These are for the server and MUST NOT have the NEXT_PUBLIC_ prefix.
+  - variable: FIREBASE_PROJECT_ID
+    secret: FIREBASE_PROJECT_ID
+  - variable: FIREBASE_STORAGE_BUCKET
+    secret: FIREBASE_STORAGE_BUCKET
+    
+# --- CLIENT-SIDE (PUBLIC) FIREBASE CONFIG ---
+  # These variables are correctly passed to the browser.
   - variable: NEXT_PUBLIC_FIREBASE_API_KEY
     secret: NEXT_PUBLIC_FIREBASE_API_KEY
   - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN

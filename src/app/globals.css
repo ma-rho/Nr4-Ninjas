@@ -67,18 +67,37 @@
   }
 }
 
-.my-masonry-grid {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  margin-left: -30px; /* gutter size offset */
-  width: auto;
-}
-.my-masonry-grid_column {
-  padding-left: 30px; /* gutter size */
-  background-clip: padding-box;
+/* --- New Forced Masonry Grid using CSS Grid --- */
+.photo-grid {
+  display: grid;
+  /* Creates a responsive grid that fits as many columns as possible between 250px and 1fr */
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  /* Sets a base height for the rows */
+  grid-auto-rows: 250px;
+  gap: 1rem;
 }
 
-.my-masonry-grid_column > .photo-item {
-  margin-bottom: 30px; /* space between items */
+.photo-grid-item {
+  width: 100%;
+  height: 100%;
+}
+
+/* --- These rules FORCE the collage effect --- */
+
+/* Make every 5th image taller */
+.photo-grid-item:nth-child(5n) {
+  grid-row: span 2;
+}
+
+/* Make every 7th image wider */
+.photo-grid-item:nth-child(7n) {
+  grid-column: span 2;
+  /* We only want it wider, not taller, unless another rule applies */
+  grid-row: span 1; 
+}
+
+/* Make every 9th image a big feature */
+.photo-grid-item:nth-child(9n) {
+  grid-column: span 2;
+  grid-row: span 2;
 }
