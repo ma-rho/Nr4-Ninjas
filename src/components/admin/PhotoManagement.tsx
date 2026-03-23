@@ -2,10 +2,12 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { collection, getDocs, deleteDoc, doc, query, orderBy, limit, startAfter, Timestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { ref, deleteObject } from 'firebase/storage';
+import { db, storage } from '@/lib/firebase';
 import Image from 'next/image';
 import { Camera, Trash2, Loader2 } from 'lucide-react';
 import { PhotoForm } from './PhotoForm';
+import { toast } from 'sonner';
 
 interface Photo {
   id: string;
@@ -19,7 +21,6 @@ export function PhotoManagement() {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   
-  // Use a ref for the loader to prevent observer re-attachment loops
   const loaderRef = useRef<HTMLDivElement>(null);
   const isInitialMount = useRef(true);
 
@@ -46,7 +47,6 @@ export function PhotoManagement() {
     }
   }, [lastVisible, hasMore, loading]);
 
-  // Initial load
   useEffect(() => {
     if (isInitialMount.current) {
       fetchPhotos(true);
@@ -54,11 +54,9 @@ export function PhotoManagement() {
     }
   }, [fetchPhotos]);
 
-  // Stable Intersection Observer for Mobile Safari
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        // threshold 0.1 is more stable on Safari than 1.0
         if (entries[0].isIntersecting && hasMore && !loading) {
           fetchPhotos();
         }
@@ -76,12 +74,43 @@ export function PhotoManagement() {
   }, [fetchPhotos, hasMore, loading]);
 
   async function handleDelete(id: string) {
+    const photoToDelete = photos.find(p => p.id === id);
+    if (!photoToDelete) {
+      toast.error("Photo not found.");
+      return;
+    }
+
     if (!confirm("Are you sure you want to delete this photo?")) return;
+
+    const toastId = toast.loading("Deleting photo...");
+
     try {
+      // Delete file from Firebase Storage
+      const storageRef = ref(storage, photoToDelete.url);
+      await deleteObject(storageRef);
+
+      // Delete document from Firestore
       await deleteDoc(doc(db, 'photos', id));
+
+      // Update UI state
       setPhotos(prev => prev.filter((p) => p.id !== id));
-    } catch (error) {
-      console.error('Error deleting document: ', error);
+      toast.success("Photo deleted successfully!", { id: toastId });
+
+    } catch (error: any) {
+      // If the file doesn't exist in storage, we can still proceed to delete the DB record
+      if (error.code === 'storage/object-not-found') {
+        try {
+          await deleteDoc(doc(db, 'photos', id));
+          setPhotos(prev => prev.filter((p) => p.id !== id));
+          toast.success("Photo record deleted (file was already removed).", { id: toastId });
+        } catch (dbError) {
+          console.error('Error deleting document after file not found: ', dbError);
+          toast.error('Failed to delete photo record.', { id: toastId });
+        }
+      } else {
+        console.error('Error deleting photo: ', error);
+        toast.error('Failed to delete photo.', { id: toastId });
+      }
     }
   }
 
@@ -101,7 +130,6 @@ export function PhotoManagement() {
       <div className="mt-8">
         <h3 className="text-xs font-black uppercase tracking-widest text-white/40 mb-4 italic">Uploaded Photos</h3>
         
-        {/* Admin grid uses a simple grid for easy management, while the public page uses masonry */}
         <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3">
           {photos.map((photo) => (
             <div key={photo.id} className="relative group aspect-square rounded-xl overflow-hidden border border-white/10 bg-white/5">
@@ -109,12 +137,12 @@ export function PhotoManagement() {
                 src={photo.url}
                 alt="Admin thumbnail"
                 fill
-                // Very small sizes for admin thumbnails drastically reduces Safari memory load
-                sizes="150px" 
+                sizes="(max-width: 640px) 33vw, 150px"
                 className="object-cover transition-transform duration-300 group-hover:scale-110"
               />
               <button 
                 onClick={() => handleDelete(photo.id)} 
+                aria-label="Delete photo"
                 className="absolute top-1 right-1 z-10 p-1.5 rounded-full bg-black/60 text-white/70 hover:bg-red-500 hover:text-white transition-colors"
               >
                 <Trash2 size={12} />

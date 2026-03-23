@@ -7,14 +7,13 @@ async function getPhotos() {
   const q = query(photosCollection, orderBy('createdAt', 'desc'));
   const querySnapshot = await getDocs(q);
   
-  // Transform the complex Firestore object into a plain serializable object
   const photos = querySnapshot.docs.map(doc => {
     const data = doc.data();
     return {
       id: doc.id,
       url: data.url,
-      // Convert Timestamp to a plain ISO string or milliseconds
-      createdAt: data.createdAt?.toDate?.() ? data.createdAt.toDate().toISOString() : null 
+      // Convert Timestamp to a serializable ISO string
+      createdAt: data.createdAt?.toDate().toISOString() || null
     };
   });
   
@@ -26,7 +25,9 @@ export default async function PhotosPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-center mb-8">Photo Gallery📸</h1>
+      <h1 className="text-4xl font-bold text-center mb-8 font-headline uppercase text-primary">
+        Photo Gallery
+      </h1>
       <PhotoGallery photos={photos} />
     </div>
   );

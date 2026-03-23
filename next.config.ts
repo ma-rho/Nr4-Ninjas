@@ -66,6 +66,7 @@ const nextConfig: NextConfig = {
         pathname: '/v0/b/nr4-9c722.firebasestorage.app/o/**',
       },
     ],
+    formats: ['image/avif', 'image/webp'],
   },
 };
 
