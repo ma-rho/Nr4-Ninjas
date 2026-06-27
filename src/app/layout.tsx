@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     'High quality urban and Black events in the South / South East of England. Norwich, Colchester, London & beyond. #nr4ninjas',
 };
 
-// Set this to false to disable the downtime page
+// Set this to true to enable the downtime page
 const isDowntime = true;
 
 const DowntimePage = () => (
