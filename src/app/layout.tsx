@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 // Set this to true to enable the downtime page
-const isDowntime = true;
+const isDowntime = false;
 
 const DowntimePage = () => (
   <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-background overflow-hidden selection:bg-primary selection:text-white">
