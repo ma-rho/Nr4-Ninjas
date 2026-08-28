@@ -18,7 +18,7 @@ export function Logo({ src = "/logo.png" }: LogoProps) {
           alt="Logo"
           width={180}
           height={60}
-          className="h-12 w-auto object-contain brightness-0 invert"
+          className="h-12 w-auto object-contain"
           priority
         />
       </div>
