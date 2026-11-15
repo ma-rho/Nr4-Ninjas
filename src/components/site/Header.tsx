@@ -119,7 +119,7 @@ export function Header() {
                   <SheetDescription>Navigation links for the website</SheetDescription>
                 </VisuallyHidden>
                 <div className="p-4">
-                  <Logo />
+                  <Logo src="/logo.PNG" />
                   <nav className="mt-8 flex flex-col space-y-2">
                     {navLinks.map((link) => (
                       <NavLink key={link.href} {...link} isMobile onClick={closeSheet} />
